@@ -736,6 +736,9 @@ func _change_experience(amount: float) -> float:
 	var actual_change_centi: int = new_exp_centi - old_exp_centi
 	var actual_change: float = actual_change_centi / 100.0
 
+	if actual_change_centi == 0:
+		return actual_change
+
 	var old_level: int = _level
 	var new_exp_float: float = new_exp_centi / 100.0
 	var new_level: int = Experience.get_level_at_exp(new_exp_float, get_player())
@@ -758,14 +761,14 @@ func _change_experience(amount: float) -> float:
 		EventBus.unit_leveled_up.emit()
 
 	var sign_string: String
-	if amount >= 0:
+	if actual_change >= 0:
 		sign_string = "+"
 	else:
 		sign_string = "-"
-	var number_string: String = String.num(abs(amount), 1)
+	var number_string: String = String.num(abs(actual_change), 1)
 	var exp_text: String = "%s%s exp" % [sign_string, number_string]
 	var text_color: Color
-	if amount >= 0:
+	if actual_change >= 0:
 		text_color = Color.LIME_GREEN
 	else:
 		text_color = Color.RED
@@ -785,7 +788,7 @@ func _change_experience(amount: float) -> float:
 
 		SFX.sfx_at_unit(SfxPaths.LEVEL_UP, self)
 
-	CombatLog.log_experience(self, amount)
+	CombatLog.log_experience(self, actual_change)
 
 	return actual_change
 
