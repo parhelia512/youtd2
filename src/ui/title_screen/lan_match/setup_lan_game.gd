@@ -153,9 +153,12 @@ func _on_peer_disconnected(_id: int):
 func _on_create_lan_match_menu_create_pressed():
 	_current_match_config = _create_lan_match_menu.get_match_config()
 
+	var team_mode: TeamMode.enm = _current_match_config.get_team_mode()
+	var player_count_max: int = TeamMode.get_player_count_max(team_mode)
+	var client_count_max: int = player_count_max - 1
+
 	var peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
-	# Maximum of 1 peer, since it's a 2-player co-op.
-	var create_server_result: Error = peer.create_server(Constants.SERVER_PORT, 1)
+	var create_server_result: Error = peer.create_server(Constants.SERVER_PORT, client_count_max)
 	if create_server_result != OK:
 		Utils.show_popup_message(self, tr("GENERIC_ERROR_TITLE"), tr("SETUP_LAN_ERROR_FAILED_SERVER").format({ERROR = error_string(create_server_result)}))
 
